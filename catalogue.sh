@@ -8,6 +8,7 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 SCRIPT_DIR=$PWD
+MONGODB_HOST=mongodb.pmpkdev.online
 
 if [ $USERID -ne 0 ]; then
       echo -e "$R Please run this script with root user access $N" | tee -a $LOGS_FILE
@@ -71,3 +72,8 @@ systemctl daemon-reload
 systemctl enable catalogue  &>>$LOGS_FILE
 systemctl start catalogue
 VALIDATE $? "Enabling And Starting Catalogue Service"
+
+cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+dnf install mongodb-mongosh -y
+
+mongosh --host $MONGODB_HOST </app/db/master-data.js
