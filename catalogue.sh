@@ -24,6 +24,9 @@ VALIDATE(){
     fi
 }
 
+if command -v node &>/dev/null && node -v | grep -q "^v20"; then
+    echo -e "Nodejs 20 is already installed ... $Y Skipping $N" | tee -a $LOGS_FILE
+else
 dnf module disable nodejs -y &>>$LOGS_FILE
 VALIDATE $? "Disabling Nodejs Default Version"
 
@@ -32,6 +35,7 @@ VALIDATE $? "Enabling Nodejs 20 version"
 
 dnf install nodejs -y &>>$LOGS_FILE
 VALIDATE $? "Installing Nodejs"
+fi
 
 id roboshop &>>$LOGS_FILE
   if [ $? -ne 0 ]; then
@@ -46,3 +50,20 @@ VALIDATE $? "Creating Directory"
 
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
 VALIDATE $? "Downloading Catalogue App Content"
+
+cd /app
+VALIDATE $? "Moving to App Directory"
+
+unzip /tmp/catalogue.zip
+VALIDATE $? "Extracting Catalogue App Content"
+
+npm install 
+VALIDATE $? "Installing Nodejs Dependencies"
+
+cp catalogue.service /etc/systemd/system/catalogue.service &>>$LOGS_FILE
+VALIDATE $? "Created systemctl Service File"
+
+systemctl daemon-reload
+systemctl enable catalogue 
+systemctl start catalogue
+VALIDATE $? "Enabling And Starting Catalogue Service"
