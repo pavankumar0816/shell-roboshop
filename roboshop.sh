@@ -11,7 +11,7 @@ do
     --instance-type "t3.micro" \
     --security-group-ids $SG_ID \
     --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" \
-    --query 'Reservations[0].Instances[0].InstanceId' \
+    --query 'Instances[0].InstanceId' \
     --output text 
     )
 
@@ -19,7 +19,7 @@ do
        IP=$(
         aws ec2 describe-instances \
         --instance-ids $instance_id \
-        --query 'Reservations[].Instances[*].PublicIpAddress' \
+        --query 'Reservations[].Instances[].PublicIpAddress' \
         --output text
 
        )
@@ -27,7 +27,7 @@ do
          IP=$(
             aws ec2 describe-instances \
             --instance-ids $instance_id \
-            --query 'Reservations[].Instances[*].PrivateIpAddress' \
+            --query 'Reservations[].Instances[].PrivateIpAddress' \
             --output text
          )
     fi
