@@ -24,7 +24,7 @@ VALIDATE(){
     fi
 }
 
-if command -v redis &>/dev/null && redis -v | grep -q "^v7"; then
+if command -v redis-server &>/dev/null && redis-server -v | grep -q "v=7"; then
     echo "Already Installed ... $Y Skipping $N" | tee -a $LOGS_FILE
 else
     dnf module disable redis -y &>> $LOGS_FILE
