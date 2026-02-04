@@ -41,29 +41,29 @@ id roboshop &>> $LOGS_FILE
     else
        echo -e "Roboshop user already exists ... $Y Skipping $N"
     fi
+
 mkdir -p /app 
 validate $? "Creating Application Directory"
 
-curl -L -o /tmp/user.zip https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip &>> $LOGS_FILE
-validate $? "Downloading User App Content"
+curl -L -o /tmp/cart.zip https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip &>> $LOGS_FILE
+validate $? "Downloading Cart App Content"
 
-cd /app 
+cd /app
 validate $? "Moving to App Directory"
 
 rm -rf /app/*
 validate $? "Removing Existing Code"
 
-unzip /tmp/user.zip &>> $LOGS_FILE
-validate $? "Extracting User App Content"
+unzip /tmp/cart.zip &>> $LOGS_FILE
+validate $? "Extracting Cart App Content"
 
 npm install &>> $LOGS_FILE
 validate $? "Installing Nodejs Dependencies"
 
-cp $SCRIPT_DIR/user.service /etc/systemd/system/user.service &>> $LOGS_FILE
-validate $? "Copying User Service File"
+cp $SCRIPT_DIR/cart.service /etc/systemd/system/cart.service &>> $LOGS_FILE
+validate $? "Copying Cart Service File"
 
 systemctl daemon-reload
-systemctl enable user &>> $LOGS_FILE
-systemctl start user
-validate $? "Enabled and Started User Service"
-
+systemctl enable cart &>> $LOGS_FILE
+systemctl start cart
+validate $? "Starting Cart Service"
