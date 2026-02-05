@@ -63,12 +63,17 @@ validate $? "Copying Shipping Service File"
 dnf install mysql -y 
 validate $? "Installing Mysql Client"
 
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql &>> $LOGS_FILE
-validate $? "Loading Shipping Schema"
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql &>> $LOGS_FILE
-validate $? "Loading Shipping Schema and User Data"
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql &>> $LOGS_FILE
-validate $? "Loading Shipping Master Data"
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 -e "use cities" &>> $LOGS_FILE
+if [ $? -ne 0 ]; then
+    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql &>> $LOGS_FILE
+    validate $? "Loading Shipping Schema"
+    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql &>> $LOGS_FILE
+    validate $? "Loading Shipping Schema and User Data"
+    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql &>> $LOGS_FILE
+    validate $? "Loading Shipping Master Data"
+else 
+    echo -e "Shipping Database already exists ... $Y Skipping $N"
+fi
 
 systemctl enable shipping &>> $LOGS_FILE
 systemctl start shipping
