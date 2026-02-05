@@ -63,9 +63,12 @@ validate $? "Copying Shipping Service File"
 dnf install mysql -y 
 validate $? "Installing Mysql Client"
 
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql 
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql &>> $LOGS_FILE
+validate $? "Loading Shipping Schema"
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql &>> $LOGS_FILE
+validate $? "Loading Shipping Schema and User Data"
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql &>> $LOGS_FILE
+validate $? "Loading Shipping Master Data"
 
 systemctl enable shipping &>> $LOGS_FILE
 systemctl start shipping
